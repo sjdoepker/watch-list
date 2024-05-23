@@ -61,6 +61,18 @@ def update_list():
 # list_entry: WatchList object
 @app.route("/add", methods=['POST'])
 def add_show():
+    try:
+        json_data = request.get_json()
+        
+        new_entry = WatchList(json.dumps(json_data))
+        
+        db.session.add(new_entry)
+        db.session.commit()
+        
+        return jsonify({"message": "WatchList entry added successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
     entry = WatchList()
 
     db.session.add(entry)
