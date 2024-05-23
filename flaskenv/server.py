@@ -60,32 +60,82 @@ def update_list():
 
 # list_entry: WatchList object
 @app.route("/add", methods=['POST'])
-def add_show():
+def add_entry():
     try:
         json_data = request.get_json()
-        
         new_entry = WatchList(json.dumps(json_data))
         
         db.session.add(new_entry)
         db.session.commit()
         
         return jsonify({"message": "WatchList entry added successfully"}), 200
-    except Exception as e:
+    except Exception as ex:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 400
-    entry = WatchList()
+        return jsonify({"error": str(ex)}), 400
 
-    db.session.add(entry)
-    db.session.commit()
-    return "", 200
+@app.route("/delete", methods=['POST'])
+def delete_entry():
+    try:
+        json_data = request.get_json()
+        d = json.dumps(json_data)
+        
+        to_delete = get_entry(d['entry_id'])
 
-# list_entry: WatchList object
-def delete_show(list_entry):
-    db.session.delete(entry_id=list_entry.id)
-    db.session.commit()
-    return "", 200
+        db.session.delete(to_delete)
+        db.session.commit()
+        
+        return jsonify({"message": "WatchList entry deleted successfully"}), 200
+    except Exception as ex:
+        db.session.rollback()
+        return jsonify({"error": str(ex)}), 400
+
+
+@app.route("/add_show", methods=['POST'])
+def add_show():
+    try:
+        json_data = request.get_json()
+        d = json.dumps(json_data)
+
+        new_show = Show(json.dumps(json_data))
+        
+        db.session.add(new_show)
+        db.session.commit()
+        
+        return jsonify({"message": "Show entry deleted successfully"}), 200
+    except Exception as ex:
+        db.session.rollback()
+        return jsonify({"error": str(ex)}), 400
+
+
+
+
+@app.route("/remove_show", methods=['POST'])
+def remove_show():
+    try:
+        json_data = request.get_json()
+        d = json.dumps(json_data)
+        to_delete = get_show(d['show_id'])
+
+        new_entry = Show(json.dumps(json_data))
+        
+        db.session.add(new_entry)
+        db.session.commit()
+        
+        return jsonify({"message": "Show entry deleted successfully"}), 200
+    except Exception as ex:
+        db.session.rollback()
+        return jsonify({"error": str(ex)}), 400
 
 
 @app.route("/list/watched")
 def get_watched():
     return
+
+
+
+# helper functions
+def get_show(id):
+    return db.session.query(Show).filter_by(show_id=id)
+
+def get_entry(id):
+    return db.session.query(Show).filter_by(entry_id=id)

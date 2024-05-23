@@ -19,6 +19,7 @@ class Show(db.Model):
         self.show_id = d.get("show_id")
         self.title = d.get("title")
 
+
 class User(db.Model):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     # update so it's not using plaintext passwords
