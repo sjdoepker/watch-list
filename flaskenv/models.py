@@ -11,7 +11,7 @@ db = SQLAlchemy()
 
 class Show(db.Model):
     show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title = Mapped[str] = mapped_column(String)
+    title: Mapped[str] = mapped_column(String)
 
 class User(db.Model):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
@@ -29,3 +29,7 @@ class WatchList(db.Model):
     date_added: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), nullable=False)
     
+
+    def __init__(self, json):
+        d = json.stringify(json)
+        
