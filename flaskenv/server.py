@@ -54,11 +54,31 @@ def get_list():
 
 @app.route("/list", methods=['POST'])
 def update_list():
-    print("updating")
-    # should call add + delete;
-    return "<h2>you've updated congrats<h2>"
+    try:
+        # Parse the JSON data from the request
+        json_data = request.get_json()
+        
+        # Retrieve the existing WatchList entry from the database
+        entry_id = json_data.get("entry_id")
+        entry = db.session.query(WatchList).filter_by(entry_id=entry_id).first()
+        if not entry:
+            return jsonify({"error": "WatchList entry not found"}), 404
+        
+        # Update the attributes of the WatchList entry based on the parsed JSON data
+        entry.show_id = json_data.get("show_id", entry.show_id)
+        entry.notes = json_data.get("notes", entry.notes)
+        entry.is_watched = json_data.get("is_watched", entry.is_watched)
+        entry.user_id = json_data.get("user_id", entry.user_id)
+        
+        # Commit the changes to the database
+        db.session.commit()
+        
+        return jsonify({"message": "WatchList entry updated successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
 
-# list_entry: WatchList object
+
 @app.route("/add", methods=['POST'])
 def add_entry():
     try:
@@ -107,8 +127,6 @@ def add_show():
         return jsonify({"error": str(ex)}), 400
 
 
-
-
 @app.route("/remove_show", methods=['POST'])
 def remove_show():
     try:
@@ -129,7 +147,8 @@ def remove_show():
 
 @app.route("/list/watched")
 def get_watched():
-    return
+    return db.session.query(WatchList).filter_by(is_watched=True).all()
+    
 
 
 
