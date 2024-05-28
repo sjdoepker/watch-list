@@ -47,16 +47,16 @@ user reg:
 - login
 """
 
-@app.route("/list/<id>")
+@app.route("/entry/get/<id>")
 # /<entry>/<>
-def get_list():
+def entry_get():
     # return all the list contents; right now, there's just one
     # entry = db.first_or_404(Entry, id)
     entry = db.first_or_404(Entry, id)
     return entry
 
-@app.route("/list", methods=['POST'])
-def update_list():
+@app.route("/entry/update/<id>", methods=['POST'])
+def entry_update():
     try:
         json_data = request.get_json()
         entry_id = json_data.get("entry_id")
@@ -77,8 +77,8 @@ def update_list():
         return jsonify({"error": str(e)}), 400
 
 
-@app.route("/add", methods=['POST'])
-def add_entry():
+@app.route("/entry/add/<id>", methods=['POST'])
+def entry_add():
     try:
         json_data = request.get_json()
         new_entry = Entry(json.dumps(json_data))
@@ -91,8 +91,8 @@ def add_entry():
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
 
-@app.route("/delete", methods=['POST'])
-def delete_entry():
+@app.route("/entry/delete/<id>", methods=['POST'])
+def entry_delete():
     try:
         json_data = request.get_json()
         d = json.dumps(json_data)
@@ -108,8 +108,8 @@ def delete_entry():
         return jsonify({"error": str(ex)}), 400
 
 
-@app.route("/add_show", methods=['POST'])
-def add_show():
+@app.route("/show/add/<id>", methods=['POST'])
+def show_add():
     try:
         json_data = request.get_json()
         d = json.dumps(json_data)
@@ -125,8 +125,8 @@ def add_show():
         return jsonify({"error": str(ex)}), 400
 
 
-@app.route("/remove_show", methods=['POST'])
-def remove_show():
+@app.route("/show/delete/<id>", methods=['POST'])
+def show_delete():
     try:
         json_data = request.get_json()
         d = json.dumps(json_data)
@@ -144,8 +144,9 @@ def remove_show():
         return jsonify({"error": str(ex)}), 400
 
 
-@app.route("/list/watched")
-def get_watched():
+# TODO: fix this being inconsistent
+@app.route("/entry/get/watched")
+def entry_get_watched():
     return db.session.query(Entry).filter_by(is_watched=True).all()
     
 
@@ -156,4 +157,4 @@ def get_show(id):
     return db.session.query(Show).filter_by(show_id=id)
 
 def get_entry(id):
-    return db.session.query(Show).filter_by(entry_id=id)
+    return db.session.query(Entry).filter_by(entry_id=id)
