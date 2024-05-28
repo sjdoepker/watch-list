@@ -48,21 +48,21 @@ user reg:
 """
 
 @app.route("/entry/get/<id>")
-# /<entry>/<>
-def entry_get():
+# TODO: change this to take a user's id and return all of their entries (maybe?)
+def entry_get(id):
     # return all the list contents; right now, there's just one
     # entry = db.first_or_404(Entry, id)
     entry = db.first_or_404(Entry, id)
     return entry
 
 @app.route("/entry/update/<id>", methods=['POST'])
-def entry_update():
+def entry_update(id):
     try:
         json_data = request.get_json()
         entry_id = json_data.get("entry_id")
         entry = db.session.query(Entry).filter_by(entry_id=entry_id).first()
         if not entry:
-            return jsonify({"error": "Entry not found"}), 404
+            return jsonify({"error": "Entry not found, cannot update"}), 404
         
         entry.show_id = json_data.get("show_id", entry.show_id)
         entry.notes = json_data.get("notes", entry.notes)
@@ -78,7 +78,8 @@ def entry_update():
 
 
 @app.route("/entry/add/<id>", methods=['POST'])
-def entry_add():
+# TODO: need id?
+def entry_add(id):
     try:
         json_data = request.get_json()
         new_entry = Entry(json.dumps(json_data))
@@ -92,13 +93,9 @@ def entry_add():
         return jsonify({"error": str(ex)}), 400
 
 @app.route("/entry/delete/<id>", methods=['POST'])
-def entry_delete():
-    try:
-        json_data = request.get_json()
-        d = json.dumps(json_data)
-        
-        to_delete = get_entry(d['entry_id'])
-
+def entry_delete(id):
+    try:        
+        to_delete = get_entry(id)
         db.session.delete(to_delete)
         db.session.commit()
         
@@ -109,10 +106,10 @@ def entry_delete():
 
 
 @app.route("/show/add/<id>", methods=['POST'])
-def show_add():
+# TODO: id necessary here?
+def show_add(id):
     try:
         json_data = request.get_json()
-        d = json.dumps(json_data)
 
         new_show = Show(json.dumps(json_data))
         
@@ -126,16 +123,10 @@ def show_add():
 
 
 @app.route("/show/delete/<id>", methods=['POST'])
-def show_delete():
+def show_delete(id):
     try:
-        json_data = request.get_json()
-        d = json.dumps(json_data)
-        to_delete = get_show(d['show_id'])
-
-        # TODO: this adds the show 
-        new_entry = Show(json.dumps(json_data))
-        
-        db.session.add(new_entry)
+        to_delete = get_show(id)
+        db.session.delete(to_delete)
         db.session.commit()
         
         return jsonify({"message": "Show entry deleted successfully"}), 200
@@ -144,12 +135,10 @@ def show_delete():
         return jsonify({"error": str(ex)}), 400
 
 
-# TODO: fix this being inconsistent
+# TODO: fix this being inconsistent, make it a user method
 @app.route("/entry/get/watched")
 def entry_get_watched():
     return db.session.query(Entry).filter_by(is_watched=True).all()
-    
-
 
 
 # helper functions
