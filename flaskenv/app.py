@@ -2,7 +2,8 @@ import os
 from flask import Flask, render_template, request, url_for, redirect, jsonify, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-# TODO: figure out how this works
+
+# TODO: figure out how this works 
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
@@ -31,7 +32,7 @@ def base():
 
     return "<h1>heya world!</h1>"
 
-#for now, have there just be 1 watch list
+
 """
 - get_towatch
 - update_towatch/update_show (singular)
@@ -58,7 +59,6 @@ def get_list():
 def update_list():
     try:
         json_data = request.get_json()
-        
         entry_id = json_data.get("entry_id")
         entry = db.session.query(WatchList).filter_by(entry_id=entry_id).first()
         if not entry:
