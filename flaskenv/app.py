@@ -2,7 +2,8 @@ import os
 from flask import Flask, render_template, request, url_for, redirect, jsonify, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-# figure out how this works
+
+# TODO: figure out how this works 
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.sql import func
 from flask_bcrypt import Bcrypt
@@ -30,7 +31,8 @@ def base():
         db.create_all()
 
     return "<h1>heya world!</h1>"
-#for now, have there just be 1 watch list
+
+
 """
 - get_towatch
 - update_towatch/update_show (singular)
@@ -46,6 +48,7 @@ user reg:
 """
 
 @app.route("/list/<id>")
+# /<watchlist>/<>
 def get_list():
     # return all the list contents; right now, WatchList
     # watchlist = db.get_or_404(WatchList, id)
@@ -55,22 +58,17 @@ def get_list():
 @app.route("/list", methods=['POST'])
 def update_list():
     try:
-        # Parse the JSON data from the request
         json_data = request.get_json()
-        
-        # Retrieve the existing WatchList entry from the database
         entry_id = json_data.get("entry_id")
         entry = db.session.query(WatchList).filter_by(entry_id=entry_id).first()
         if not entry:
             return jsonify({"error": "WatchList entry not found"}), 404
         
-        # Update the attributes of the WatchList entry based on the parsed JSON data
         entry.show_id = json_data.get("show_id", entry.show_id)
         entry.notes = json_data.get("notes", entry.notes)
         entry.is_watched = json_data.get("is_watched", entry.is_watched)
         entry.user_id = json_data.get("user_id", entry.user_id)
         
-        # Commit the changes to the database
         db.session.commit()
         
         return jsonify({"message": "WatchList entry updated successfully"}), 200
@@ -134,6 +132,7 @@ def remove_show():
         d = json.dumps(json_data)
         to_delete = get_show(d['show_id'])
 
+        # TODO: this adds the show 
         new_entry = Show(json.dumps(json_data))
         
         db.session.add(new_entry)
