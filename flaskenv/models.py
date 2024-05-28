@@ -35,7 +35,7 @@ class User(db.Model):
         self.display_name = d.get("display_name")
 
 
-class WatchList(db.Model):
+class Entry(db.Model):
     entry_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     show_id: Mapped[int] = mapped_column(ForeignKey(Show.show_id))
     notes: Mapped[str] = mapped_column(Text, nullable=True)

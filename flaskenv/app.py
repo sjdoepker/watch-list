@@ -48,21 +48,21 @@ user reg:
 """
 
 @app.route("/list/<id>")
-# /<watchlist>/<>
+# /<entry>/<>
 def get_list():
-    # return all the list contents; right now, WatchList
-    # watchlist = db.get_or_404(WatchList, id)
-    watchlist = db.first_or_404(WatchList, id)
-    return watchlist
+    # return all the list contents; right now, there's just one
+    # entry = db.first_or_404(Entry, id)
+    entry = db.first_or_404(Entry, id)
+    return entry
 
 @app.route("/list", methods=['POST'])
 def update_list():
     try:
         json_data = request.get_json()
         entry_id = json_data.get("entry_id")
-        entry = db.session.query(WatchList).filter_by(entry_id=entry_id).first()
+        entry = db.session.query(Entry).filter_by(entry_id=entry_id).first()
         if not entry:
-            return jsonify({"error": "WatchList entry not found"}), 404
+            return jsonify({"error": "Entry not found"}), 404
         
         entry.show_id = json_data.get("show_id", entry.show_id)
         entry.notes = json_data.get("notes", entry.notes)
@@ -71,7 +71,7 @@ def update_list():
         
         db.session.commit()
         
-        return jsonify({"message": "WatchList entry updated successfully"}), 200
+        return jsonify({"message": "Entry updated successfully"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
@@ -81,12 +81,12 @@ def update_list():
 def add_entry():
     try:
         json_data = request.get_json()
-        new_entry = WatchList(json.dumps(json_data))
+        new_entry = Entry(json.dumps(json_data))
         
         db.session.add(new_entry)
         db.session.commit()
         
-        return jsonify({"message": "WatchList entry added successfully"}), 200
+        return jsonify({"message": "Entry added successfully"}), 200
     except Exception as ex:
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
@@ -102,7 +102,7 @@ def delete_entry():
         db.session.delete(to_delete)
         db.session.commit()
         
-        return jsonify({"message": "WatchList entry deleted successfully"}), 200
+        return jsonify({"message": "Entry deleted successfully"}), 200
     except Exception as ex:
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
@@ -146,7 +146,7 @@ def remove_show():
 
 @app.route("/list/watched")
 def get_watched():
-    return db.session.query(WatchList).filter_by(is_watched=True).all()
+    return db.session.query(Entry).filter_by(is_watched=True).all()
     
 
 
