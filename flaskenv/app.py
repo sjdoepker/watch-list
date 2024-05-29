@@ -51,7 +51,19 @@ def user_register():
 
     return jsonify({"message":"User registered successfully"}, 200)
 
+@app.route("/user/login/<id>")
+def user_login():
+    data = request.get_json()
+    
+    user = db.session.get(user_id=id)
+    if user is None:
+        return jsonify({"error":"User does not exist"}, 400)
+    plain_pw = data["pw"]
 
+    if not user.pw_valid(plain_pw):
+        return jsonify({"error": "In]correct password for that user"}, 401)
+
+    
 
 
 @app.route("/entry/get/<id>")

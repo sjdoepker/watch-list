@@ -26,6 +26,13 @@ class User(db.Model):
         self.id = d.get("id")
         self.display_name = d.get("display_name")
 
+    # Returns True if password matches the User's, False otherwise
+    def pw_valid(self, plain):
+        if bcrypt.checkpw(plain, self.pw):
+            return True
+        else:
+            return False
+
 
 class Show(db.Model):
     show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
