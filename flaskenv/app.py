@@ -32,23 +32,8 @@ def base():
 
     return "<h1>heya world!</h1>"
 
-
-"""
-- get_towatch
-- update_towatch/update_show (singular)
-- add_show
-- delete_show
-- get_watched
-- get_shows
-    - watched (bool)
-
-user reg:
-- signup
-- login
-"""
-
 @app.route("/entry/get/<id>")
-# TODO: change this to take a user's id and return all of their entries (maybe?)
+# TODO: make this something that falls under user so that it gets all of their entries
 def entry_get(id):
     # return all the list contents; right now, there's just one
     # entry = db.first_or_404(Entry, id)
