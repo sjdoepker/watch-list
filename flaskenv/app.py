@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask, render_template, request, url_for, redirect, jsonify, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -34,9 +35,17 @@ def base():
     return "<h1>heya world!</h1>"
 
 
-@app.route("/user/register")
+@app.route("/user/register", methods=["POST", "GET"])
 def user_register():
+    print(request)
     data = request.get_json()
+    print(data)
+
+    email = data.get['email']
+    existing = db.one_or_404(db.select(User).filter_by(email=email))
+    if existing is not None:
+        return jsonify({"error":f"User with email {email} already exists"}, 400)
+
     try:
         new_user = User(json.dumps(data))
     except Exception as e:
@@ -63,7 +72,7 @@ def user_login():
     if not user.pw_valid(plain_pw):
         return jsonify({"error": "In]correct password for that user"}, 401)
 
-    
+
 
 
 @app.route("/entry/get/<id>")

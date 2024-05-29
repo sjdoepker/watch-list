@@ -21,8 +21,9 @@ class User(db.Model):
     def __init__(self, json_data):
         d = json.loads(json_data)
         self.email = d.get("email")
-        plain = d.get("pw")
+        plain = bytes(d.get("pw"), 'utf-8')
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
+        # TODO: id should be something decided in here, not by the user/frontend
         self.id = d.get("id")
         self.display_name = d.get("display_name")
 
