@@ -34,9 +34,22 @@ def base():
     return "<h1>heya world!</h1>"
 
 
-# @app.route("/user/register")
-# def user_register():
+@app.route("/user/register")
+def user_register():
+    data = request.get_json()
+    try:
+        new_user = User(json.dumps(data))
+    except Exception as e:
+        return jsonify({"error": f"User registration failed:{e}"}, 400)
 
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}, 500)
+
+    return jsonify({"message":"User registered successfully"}, 200)
 
 
 
@@ -52,16 +65,16 @@ def entry_get(id):
 @app.route("/entry/update/<id>", methods=['POST'])
 def entry_update(id):
     try:
-        json_data = request.get_json()
-        entry_id = json_data.get("entry_id")
+        data = request.get_json()
+        entry_id = data.get("entry_id")
         entry = db.session.query(Entry).filter_by(entry_id=entry_id).first()
         if not entry:
             return jsonify({"error": "Entry not found, cannot update"}), 404
         
-        entry.show_id = json_data.get("show_id", entry.show_id)
-        entry.notes = json_data.get("notes", entry.notes)
-        entry.is_watched = json_data.get("is_watched", entry.is_watched)
-        entry.user_id = json_data.get("user_id", entry.user_id)
+        entry.show_id = data.get("show_id", entry.show_id)
+        entry.notes = data.get("notes", entry.notes)
+        entry.is_watched = data.get("is_watched", entry.is_watched)
+        entry.user_id = data.get("user_id", entry.user_id)
         
         db.session.commit()
         
@@ -74,8 +87,8 @@ def entry_update(id):
 # TODO: need id?
 def entry_add(id):
     try:
-        json_data = request.get_json()
-        new_entry = Entry(json.dumps(json_data))
+        data = request.get_json()
+        new_entry = Entry(json.dumps(data))
         
         db.session.add(new_entry)
         db.session.commit()
@@ -101,9 +114,9 @@ def entry_delete(id):
 # TODO: id necessary here?
 def show_add(id):
     try:
-        json_data = request.get_json()
+        data = request.get_json()
 
-        new_show = Show(json.dumps(json_data))
+        new_show = Show(json.dumps(data))
         
         db.session.add(new_show)
         db.session.commit()

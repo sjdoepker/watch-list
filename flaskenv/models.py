@@ -23,7 +23,6 @@ class User(db.Model):
         self.email = d.get("email")
         plain = d.get("pw")
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
-        self.pw = d.get("pw")
         self.id = d.get("id")
         self.display_name = d.get("display_name")
 
