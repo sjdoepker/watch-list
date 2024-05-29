@@ -5,20 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
+import bcrypt
 
 
 
 db = SQLAlchemy()
-
-class Show(db.Model):
-    show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title: Mapped[str] = mapped_column(String)
-
-    def __init__(self, json_data):
-        d = json.loads(json_data)
-        self.show_id = d.get("show_id")
-        self.title = d.get("title")
-
 
 class User(db.Model):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
@@ -30,9 +21,21 @@ class User(db.Model):
     def __init__(self, json_data):
         d = json.loads(json_data)
         self.email = d.get("email")
+        plain = d.get("pw")
+        self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
         self.pw = d.get("pw")
         self.id = d.get("id")
         self.display_name = d.get("display_name")
+
+
+class Show(db.Model):
+    show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String)
+
+    def __init__(self, json_data):
+        d = json.loads(json_data)
+        self.show_id = d.get("show_id")
+        self.title = d.get("title")
 
 
 class Entry(db.Model):

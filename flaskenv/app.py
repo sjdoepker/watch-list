@@ -11,21 +11,20 @@ from flask_cors import CORS
 from models import *
 
 
+
 app = Flask(__name__)
 
-app.config.from_pyfile('config.py')
-
-
-
+app.config.from_pyfile('instance/config.py')
 # initialize the app with the extension
 app.json.compact = False
 
 CORS(app)
-
+# bcrypt = Bcrypt(app)
 
 migrate = Migrate(app, db)
 db.init_app(app)
 migrate.init_app(app, db)
+
 
 @app.route("/")
 def base():
@@ -33,6 +32,14 @@ def base():
         db.create_all()
 
     return "<h1>heya world!</h1>"
+
+
+# @app.route("/user/register")
+# def user_register():
+
+
+
+
 
 @app.route("/entry/get/<id>")
 # TODO: make this something that falls under user so that it gets all of their entries
@@ -63,7 +70,6 @@ def entry_update(id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
-
 @app.route("/entry/add/<id>", methods=['POST'])
 # TODO: need id?
 def entry_add(id):
@@ -91,7 +97,6 @@ def entry_delete(id):
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
 
-
 @app.route("/show/add/<id>", methods=['POST'])
 # TODO: id necessary here?
 def show_add(id):
@@ -108,7 +113,6 @@ def show_add(id):
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
 
-
 @app.route("/show/delete/<id>", methods=['POST'])
 def show_delete(id):
     try:
@@ -120,7 +124,6 @@ def show_delete(id):
     except Exception as ex:
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
-
 
 # TODO: fix this being inconsistent, make it a user method
 @app.route("/entry/get/watched")
