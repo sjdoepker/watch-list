@@ -1,3 +1,4 @@
+import functools
 import os
 import logging
 from flask import Flask, render_template, request, url_for, redirect, jsonify, session, make_response
@@ -34,6 +35,17 @@ def base():
         db.create_all()
 
     return "<h1>heya world!</h1>"
+
+def login_required(fcn):
+    # wraps keeps the decorated endpoint name same as original, args + kwargs makes sure params are passed correctly
+    @functools.wraps(fcn)
+    def check_session(*args, **kwargs):
+        if "email" not in session:
+            # theoretically here, could redirect to login and store where they wanted to go and send them there after
+            return redirect("/user/login", 400)
+        return fcn(*args, **kwargs)
+
+    return check_session
 
 
 @app.route("/user/register", methods=["POST", "GET"])
@@ -79,7 +91,7 @@ def user_login():
     # create session (clearing what already exists) and add user info to it
     session.clear()
     session.permanent = True
-    session['id'] = user.id
+    session['user_id'] = user.id
     session['email'] = email
     session['display_name'] = user.display_name
 
@@ -141,6 +153,7 @@ def entry_delete(id):
     except Exception as ex:
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
+
 
 @app.route("/show/add/<id>", methods=['POST'])
 # TODO: id necessary here?
