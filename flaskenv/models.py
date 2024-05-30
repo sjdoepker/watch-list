@@ -29,7 +29,8 @@ class User(db.Model):
 
     # Returns True if password matches the User's, False otherwise
     def pw_valid(self, plain):
-        if bcrypt.checkpw(plain, self.pw):
+        b_plain = bytes(plain, 'utf-8')
+        if bcrypt.checkpw(b_plain, self.pw):
             return True
         else:
             return False

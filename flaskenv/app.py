@@ -26,6 +26,7 @@ migrate = Migrate(app, db)
 db.init_app(app)
 migrate.init_app(app, db)
 
+# TODO: use an @app.before_request thing to try and auto-authenticate before each request
 
 @app.route("/")
 def base():
@@ -41,7 +42,7 @@ def user_register():
     data = request.get_json()
     print(data)
 
-    email = data.get['email']
+    email = data['email']
     existing = db.one_or_404(db.select(User).filter_by(email=email))
     if existing is not None:
         return jsonify({"error":f"User with email {email} already exists"}, 400)
@@ -60,19 +61,29 @@ def user_register():
 
     return jsonify({"message":"User registered successfully"}, 200)
 
-@app.route("/user/login/<id>")
+@app.route("/user/login", methods=['GET','POST'])
 def user_login():
     data = request.get_json()
+    email = data['email']
     
-    user = db.session.get(user_id=id)
+    print(data)
+    user = db.one_or_404(db.select(User).filter_by(email=email))
     if user is None:
-        return jsonify({"error":"User does not exist"}, 400)
+        return jsonify({"error":f"User with email {email} does not exist"}, 400)
+    
+    
     plain_pw = data["pw"]
-
     if not user.pw_valid(plain_pw):
-        return jsonify({"error": "In]correct password for that user"}, 401)
+        return jsonify({"error": "Incorrect password for that user"}, 401)
 
+    # create session (clearing what already exists) and add user info to it
+    session.clear()
+    session.permanent = True
+    session['id'] = user.id
+    session['email'] = email
+    session['display_name'] = user.display_name
 
+    return jsonify({"message":f"User {user.display_name} logged in successfully"})
 
 
 @app.route("/entry/get/<id>")
@@ -87,8 +98,8 @@ def entry_get(id):
 def entry_update(id):
     try:
         data = request.get_json()
-        entry_id = data.get("entry_id")
-        entry = db.session.query(Entry).filter_by(entry_id=entry_id).first()
+        # entry_id = data.get("entry_id")
+        entry = db.session.query(Entry).filter_by(entry_id=id).first()
         if not entry:
             return jsonify({"error": "Entry not found, cannot update"}), 404
         
