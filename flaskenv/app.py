@@ -1,3 +1,4 @@
+import functools
 import os
 import logging
 from flask import Flask, render_template, request, url_for, redirect, jsonify, session, make_response
@@ -35,15 +36,25 @@ def base():
 
     return "<h1>heya world!</h1>"
 
+def login_required(fcn):
+    # wraps keeps the decorated endpoint name same as original, args + kwargs makes sure params are passed correctly
+    @functools.wraps(fcn)
+    def check_session(*args, **kwargs):
+        if "email" not in session:
+            # theoretically here, could redirect to login and store where they wanted to go and send them there after
+            # return redirect("/user/login", 400)
+            return jsonify({"error":"You must be logged in to access this page"}, 400)
+        return fcn(*args, **kwargs)
+
+    return check_session
+
 
 @app.route("/user/register", methods=["POST", "GET"])
 def user_register():
-    print(request)
     data = request.get_json()
-    print(data)
 
     email = data['email']
-    existing = db.one_or_404(db.select(User).filter_by(email=email))
+    existing = db.session.execute(db.select(User).where(User.email==email)).first()
     if existing is not None:
         return jsonify({"error":f"User with email {email} already exists"}, 400)
 
@@ -61,13 +72,13 @@ def user_register():
 
     return jsonify({"message":"User registered successfully"}, 200)
 
+
 @app.route("/user/login", methods=['GET','POST'])
 def user_login():
     data = request.get_json()
     email = data['email']
     
-    print(data)
-    user = db.one_or_404(db.select(User).filter_by(email=email))
+    user = db.session.execute(db.select(User).where(User.email==email)).first()
     if user is None:
         return jsonify({"error":f"User with email {email} does not exist"}, 400)
     
@@ -79,27 +90,31 @@ def user_login():
     # create session (clearing what already exists) and add user info to it
     session.clear()
     session.permanent = True
-    session['id'] = user.id
+    session['user_id'] = user.id
     session['email'] = email
     session['display_name'] = user.display_name
 
     return jsonify({"message":f"User {user.display_name} logged in successfully"})
 
 
-@app.route("/entry/get/<id>")
+@app.route("/entry/get/<id>", methods=["GET"])
+@login_required
 # TODO: make this something that falls under user so that it gets all of their entries
 def entry_get(id):
     # return all the list contents; right now, there's just one
-    # entry = db.first_or_404(Entry, id)
-    entry = db.first_or_404(Entry, id)
-    return entry
+    print("session:", session)
+    entry = get_entry(id)
+    return str(entry)
+
 
 @app.route("/entry/update/<id>", methods=['POST'])
+@login_required
 def entry_update(id):
     try:
         data = request.get_json()
+        entry = get_entry(id)
         # entry_id = data.get("entry_id")
-        entry = db.session.query(Entry).filter_by(entry_id=id).first()
+        # entry = db.session.query(Entry).filter_by(entry_id=id).first()
         if not entry:
             return jsonify({"error": "Entry not found, cannot update"}), 404
         
@@ -116,6 +131,7 @@ def entry_update(id):
         return jsonify({"error": str(e)}), 400
 
 @app.route("/entry/add/<id>", methods=['POST'])
+@login_required
 # TODO: need id?
 def entry_add(id):
     try:
@@ -130,7 +146,9 @@ def entry_add(id):
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
 
+
 @app.route("/entry/delete/<id>", methods=['POST'])
+@login_required
 def entry_delete(id):
     try:        
         to_delete = get_entry(id)
@@ -142,7 +160,10 @@ def entry_delete(id):
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
 
+
+
 @app.route("/show/add/<id>", methods=['POST'])
+@login_required
 # TODO: id necessary here?
 def show_add(id):
     try:
@@ -158,7 +179,9 @@ def show_add(id):
         db.session.rollback()
         return jsonify({"error": str(ex)}), 400
 
+
 @app.route("/show/delete/<id>", methods=['POST'])
+@login_required
 def show_delete(id):
     try:
         to_delete = get_show(id)
@@ -172,6 +195,7 @@ def show_delete(id):
 
 # TODO: fix this being inconsistent, make it a user method
 @app.route("/entry/get/watched")
+@login_required
 def entry_get_watched():
     return db.session.query(Entry).filter_by(is_watched=True).all()
 
