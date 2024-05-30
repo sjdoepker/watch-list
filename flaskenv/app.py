@@ -51,12 +51,10 @@ def login_required(fcn):
 
 @app.route("/user/register", methods=["POST", "GET"])
 def user_register():
-    print(request)
     data = request.get_json()
-    print(data)
 
     email = data['email']
-    existing = db.one_or_404(db.select(User).filter_by(email=email))
+    existing = db.session.execute(db.select(User).where(User.email==email)).first()
     if existing is not None:
         return jsonify({"error":f"User with email {email} already exists"}, 400)
 
@@ -80,8 +78,7 @@ def user_login():
     data = request.get_json()
     email = data['email']
     
-    print(data)
-    user = db.one_or_404(db.select(User).filter_by(email=email))
+    user = db.session.execute(db.select(User).where(User.email==email)).first()
     if user is None:
         return jsonify({"error":f"User with email {email} does not exist"}, 400)
     
@@ -105,7 +102,6 @@ def user_login():
 # TODO: make this something that falls under user so that it gets all of their entries
 def entry_get(id):
     # return all the list contents; right now, there's just one
-    # entry = db.first_or_404(Entry, id)
     print("session:", session)
     entry = get_entry(id)
     return str(entry)

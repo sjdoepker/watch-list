@@ -24,7 +24,7 @@ class User(db.Model):
         plain = bytes(d.get("pw"), 'utf-8')
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
         # TODO: id should be something decided in here, not by the user/frontend
-        self.id = d.get("id")
+        self.id = self.generate_user_id()
         self.display_name = d.get("display_name")
 
     # Returns True if password matches the User's, False otherwise
@@ -40,6 +40,14 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User(id={self.id}, display_name={self.display_name}, email={self.email})>"
+
+    @staticmethod
+    def generate_user_id():
+        max_id = db.session.execute(db.select(db.func.max(User.id))).scalar()
+        if max_id is None:
+            return 1
+        return max_id + 1
+
 
 
 class Show(db.Model):
