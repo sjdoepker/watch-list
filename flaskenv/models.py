@@ -5,20 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
+import bcrypt
 
 
 
 db = SQLAlchemy()
-
-class Show(db.Model):
-    show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title: Mapped[str] = mapped_column(String)
-
-    def __init__(self, json_data):
-        d = json.loads(json_data)
-        self.show_id = d.get("show_id")
-        self.title = d.get("title")
-
 
 class User(db.Model):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
@@ -30,9 +21,29 @@ class User(db.Model):
     def __init__(self, json_data):
         d = json.loads(json_data)
         self.email = d.get("email")
-        self.pw = d.get("pw")
+        plain = bytes(d.get("pw"), 'utf-8')
+        self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
+        # TODO: id should be something decided in here, not by the user/frontend
         self.id = d.get("id")
         self.display_name = d.get("display_name")
+
+    # Returns True if password matches the User's, False otherwise
+    def pw_valid(self, plain):
+        b_plain = bytes(plain, 'utf-8')
+        if bcrypt.checkpw(b_plain, self.pw):
+            return True
+        else:
+            return False
+
+
+class Show(db.Model):
+    show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String)
+
+    def __init__(self, json_data):
+        d = json.loads(json_data)
+        self.show_id = d.get("show_id")
+        self.title = d.get("title")
 
 
 class Entry(db.Model):
