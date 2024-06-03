@@ -21,13 +21,12 @@ app.config.from_pyfile('instance/config.py')
 app.json.compact = False
 
 CORS(app)
-# bcrypt = Bcrypt(app)
 
 migrate = Migrate(app, db)
 db.init_app(app)
 migrate.init_app(app, db)
 
-# TODO: use an @app.before_request thing to try and auto-authenticate before each request
+
 
 @app.route("/")
 def base():
@@ -113,8 +112,6 @@ def entry_update(id):
     try:
         data = request.get_json()
         entry = query_entry(id)
-        # entry_id = data.get("entry_id")
-        # entry = db.session.query(Entry).filter_by(entry_id=id).first()
         if not entry:
             return jsonify({"error": "Entry not found, cannot update"}), 404
         
