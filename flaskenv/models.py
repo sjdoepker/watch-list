@@ -12,10 +12,9 @@ import bcrypt
 db = SQLAlchemy()
 
 class User(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
-    # update so it's not using plaintext passwords
     pw: Mapped[str] = mapped_column(String)
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     display_name: Mapped[str] = mapped_column(String)
 
     def __init__(self, json_data):
@@ -24,7 +23,6 @@ class User(db.Model):
         plain = bytes(d.get("pw"), 'utf-8')
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
         # TODO: id should be something decided in here, not by the user/frontend
-        self.id = self.generate_user_id()
         self.display_name = d.get("display_name")
 
     # Returns True if password matches the User's, False otherwise
@@ -41,12 +39,6 @@ class User(db.Model):
     def __repr__(self):
         return f"<User(id={self.id}, display_name={self.display_name}, email={self.email})>"
 
-    @staticmethod
-    def generate_user_id():
-        max_id = db.session.execute(db.select(db.func.max(User.id))).scalar()
-        if max_id is None:
-            return 1
-        return max_id + 1
 
 
 

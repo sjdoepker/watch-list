@@ -21,13 +21,12 @@ app.config.from_pyfile('instance/config.py')
 app.json.compact = False
 
 CORS(app)
-# bcrypt = Bcrypt(app)
 
 migrate = Migrate(app, db)
 db.init_app(app)
 migrate.init_app(app, db)
 
-# TODO: use an @app.before_request thing to try and auto-authenticate before each request
+
 
 @app.route("/")
 def base():
@@ -103,7 +102,7 @@ def user_login():
 def entry_get(id):
     # return all the list contents; right now, there's just one
     print("session:", session)
-    entry = get_entry(id)
+    entry = query_entry(id)
     return str(entry)
 
 
@@ -112,9 +111,7 @@ def entry_get(id):
 def entry_update(id):
     try:
         data = request.get_json()
-        entry = get_entry(id)
-        # entry_id = data.get("entry_id")
-        # entry = db.session.query(Entry).filter_by(entry_id=id).first()
+        entry = query_entry(id)
         if not entry:
             return jsonify({"error": "Entry not found, cannot update"}), 404
         
@@ -151,7 +148,7 @@ def entry_add(id):
 @login_required
 def entry_delete(id):
     try:        
-        to_delete = get_entry(id)
+        to_delete = query_entry(id)
         db.session.delete(to_delete)
         db.session.commit()
         
@@ -184,7 +181,7 @@ def show_add(id):
 @login_required
 def show_delete(id):
     try:
-        to_delete = get_show(id)
+        to_delete = query_show(id)
         db.session.delete(to_delete)
         db.session.commit()
         
@@ -201,8 +198,8 @@ def entry_get_watched():
 
 
 # helper functions
-def get_show(id):
+def query_show(id):
     return db.session.query(Show).filter_by(show_id=id)
 
-def get_entry(id):
+def query_entry(id):
     return db.session.query(Entry).filter_by(entry_id=id)
