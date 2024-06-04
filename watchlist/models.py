@@ -1,7 +1,7 @@
 """File containing database models/schema"""
 import json
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime
+from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime, IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 import bcrypt
@@ -32,7 +32,7 @@ class User(db.Model):
         """
         user = db.session.execute(db.select(User).where(User.email==email)).first()
         if user is not None:
-            raise ValueError(f"Email {email} is not unique")
+            raise IntegrityError(f"Email {email} is not unique")
 
     def pw_valid(self, plain):
         """
