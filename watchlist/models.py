@@ -1,9 +1,10 @@
 """File containing database models/schema"""
 import json
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime, IntegrityError
+from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from sqlalchemy.exc import IntegrityError
 import bcrypt
 
 db = SQLAlchemy()
@@ -32,8 +33,8 @@ class User(db.Model):
         """
         user = db.session.execute(db.select(User).where(User.email==email)).first()
         if user is not None:
-            raise IntegrityError(f"Email {email} is not unique")
-
+            raise IntegrityError("Email already in use", None, Exception)
+        
     def pw_valid(self, plain):
         """
         Validates a plain-text password for a user login. 
