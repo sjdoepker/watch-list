@@ -67,7 +67,7 @@ def user_register():
         new_user = User(json.dumps(data))
     except exc.SQLAlchemyError as e:
         return jsonify({"error": f"User registration failed:{e}"}, 400)
-    
+
     try:
         db.session.add(new_user)
         db.session.commit()
