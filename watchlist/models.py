@@ -34,7 +34,7 @@ class User(db.Model):
         user = db.session.execute(db.select(User).where(User.email==email)).first()
         if user is not None:
             raise IntegrityError("Email already in use", None, Exception)
-        
+
     def pw_valid(self, plain):
         """
         Validates a plain-text password for a user login. 
