@@ -3,7 +3,7 @@ name: Pylint
 on:
   push:
     paths-ignore:
-      - "migrations/**"
+      - "**/migrations/**"
       - "README.md"
 
 jobs:
