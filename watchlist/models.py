@@ -27,6 +27,9 @@ class User(db.Model):
         self.display_name = d.get("display_name")
 
     def _email_unique(self, email):
+        """
+        Checks to see if an email exists in the database and thus avaliable to be a primary key.
+        """
         user = db.session.execute(db.select(User).where(User.email==email)).first()
         if user is not None:
             raise ValueError(f"Email {email} is not unique")
