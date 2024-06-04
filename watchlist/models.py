@@ -19,10 +19,17 @@ class User(db.Model):
 
     def __init__(self, json_data):
         d = json.loads(json_data)
-        self.email = d.get("email")
+        email = d.get("email")
+        self._email_unique(email)
+        self.email = email
         plain = bytes(d.get("pw"), 'utf-8')
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
         self.display_name = d.get("display_name")
+
+    def _email_unique(self, email):
+        user = db.session.execute(db.select(User).where(User.email==email)).first()
+        if user is not None:
+            raise ValueError(f"Email {email} is not unique")
 
     def pw_valid(self, plain):
         """
