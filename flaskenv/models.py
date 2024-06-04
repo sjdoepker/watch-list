@@ -1,17 +1,17 @@
-import os
+"""File containing database models/schema"""
 import json
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 import bcrypt
-
-
 
 db = SQLAlchemy()
 
 class User(db.Model):
+    """
+    User model for database.
+    """
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     pw: Mapped[str] = mapped_column(String)
@@ -22,17 +22,17 @@ class User(db.Model):
         self.email = d.get("email")
         plain = bytes(d.get("pw"), 'utf-8')
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
-        # TODO: id should be something decided in here, not by the user/frontend
         self.display_name = d.get("display_name")
 
-    # Returns True if password matches the User's, False otherwise
     def pw_valid(self, plain):
+        """
+        Validates a plain-text password for a user login. 
+
+        Returns True if password matches the User's, False otherwise.
+        """
         b_plain = bytes(plain, 'utf-8')
-        if bcrypt.checkpw(b_plain, self.pw):
-            return True
-        else:
-            return False
-        
+        return bcrypt.checkpw(b_plain, self.pw)
+
     def __str__(self):
         return f"Display Name: {self.display_name}, Email: {self.email}"
 
@@ -40,9 +40,10 @@ class User(db.Model):
         return f"<User(id={self.id}, display_name={self.display_name}, email={self.email})>"
 
 
-
-
 class Show(db.Model):
+    """
+    Show model for database.
+    """
     show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String)
 
@@ -59,13 +60,15 @@ class Show(db.Model):
 
 
 class Entry(db.Model):
+    """
+    Entry model for database. (Individual entries on a User's list)
+    """
     entry_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     show_id: Mapped[int] = mapped_column(ForeignKey(Show.show_id))
     notes: Mapped[str] = mapped_column(Text, nullable=True)
     is_watched: Mapped[bool] = mapped_column(Boolean, default=False)
-    date_added: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    date_added: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now)
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), nullable=False)
-    
 
     def __init__(self, json_data):
         d = json.loads(json_data)
@@ -76,7 +79,10 @@ class Entry(db.Model):
         self.user_id = d.get("user_id")
 
     def __str__(self):
-        return f"Entry ID: {self.entry_id}, Show ID: {self.show_id}, Watched: {self.is_watched}, Date Added: {self.date_added}"
+        return f"Entry ID: {self.entry_id}, Show ID: {self.show_id}, \
+            Watched: {self.is_watched}, Date Added: {self.date_added}"
 
     def __repr__(self):
-        return f"<Entry(entry_id={self.entry_id}, show_id={self.show_id}, notes={self.notes}, is_watched={self.is_watched}, date_added={self.date_added}, user_id={self.user_id})>"
+        return f"<Entry(entry_id={self.entry_id}, show_id={self.show_id}, \
+            notes={self.notes}, is_watched={self.is_watched}, \
+            date_added={self.date_added}, user_id={self.user_id})>"
