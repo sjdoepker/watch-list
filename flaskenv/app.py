@@ -249,3 +249,6 @@ def query_entry(query_id):
     Uses .first() to return the Entry object rather than a Query object; entry_ids are unique.
     """
     return db.session.query(Entry).filter_by(entry_id=query_id).first()
+
+if __name__ == "__main__":
+    app.run(debug=True)
