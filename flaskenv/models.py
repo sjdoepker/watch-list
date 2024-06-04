@@ -67,7 +67,8 @@ class Entry(db.Model):
     show_id: Mapped[int] = mapped_column(ForeignKey(Show.show_id))
     notes: Mapped[str] = mapped_column(Text, nullable=True)
     is_watched: Mapped[bool] = mapped_column(Boolean, default=False)
-    date_added: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now)
+    # pylint: disable=not-callable
+    date_added: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), nullable=False)
 
     def __init__(self, json_data):
