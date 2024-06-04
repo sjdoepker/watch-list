@@ -1,4 +1,4 @@
 # to watch
 
 
-To build docker image: ``docker build --tag python-docker .`` (for own reference)
+To build docker image: ``docker build --tag watchlist-docker .`` (for own reference)
