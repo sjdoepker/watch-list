@@ -5,10 +5,10 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
-from watchlist.models import User, Show, Entry
+from watchlist.models import User, Show, Entry # pylint: disable=import-error
 
 # pylint: disable=unused-import
-from tests.conftest import test_db, test_user, test_show, test_entry
+from tests.conftest import test_db, test_user, test_show, test_entry # pylint: disable=import-error
 
 def test_new_user_created(db):
     """
