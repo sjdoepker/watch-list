@@ -7,7 +7,7 @@ import json
 import pytest
 
 from flask_sqlalchemy import SQLAlchemy
-from watchlist.models import User, Show, Entry
+from watchlist_proj.models import User, Show, Entry
 
 # so that it can find watchlist.models
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

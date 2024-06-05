@@ -8,7 +8,7 @@ from flask_migrate import Migrate
 from sqlalchemy import exc
 
 from flask_cors import CORS
-from watchlist.models import db, User, Show, Entry
+from watchlist_proj.models import db, User, Show, Entry
 
 app = Flask(__name__)
 
