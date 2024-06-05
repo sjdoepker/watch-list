@@ -1,7 +1,7 @@
 # pylint: disable=redefined-outer-name
 """Unit tests for db models"""
 import json
-import pytest
+import pytest #pylint: disable=import-error
 
 from sqlalchemy.exc import IntegrityError
 

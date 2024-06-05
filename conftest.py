@@ -4,7 +4,8 @@
 import os
 import sys
 import json
-import pytest
+import pytest #pylint: disable=import-error
+# i cannot, for the life of me, figure out why i need to do this
 
 from flask_sqlalchemy import SQLAlchemy
 from watchlist_proj.models import User, Show, Entry
