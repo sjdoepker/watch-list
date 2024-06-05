@@ -8,7 +8,7 @@ from flask_migrate import Migrate
 from sqlalchemy import exc
 
 from flask_cors import CORS
-from models import db, User, Show, Entry
+from watchlist_proj.models import db, User, Show, Entry
 
 app = Flask(__name__)
 
@@ -62,11 +62,6 @@ def user_register():
     Registers a user account.
     """
     data = request.get_json()
-
-    email = data['email']
-    existing = db.session.execute(db.select(User).where(User.email==email)).first()
-    if existing is not None:
-        return jsonify({"error":f"User with email {email} already exists"}, 400)
 
     try:
         new_user = User(json.dumps(data))
@@ -222,7 +217,7 @@ def show_delete(show_id):
         return jsonify({"error": str(e)}), 400
 
 
-@app.route("/entry/get/watched")
+@app.route("/entry/get/watched", methods=["GET"])
 @login_required
 def entry_get_watched():
     """

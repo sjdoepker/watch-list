@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from sqlalchemy.exc import IntegrityError
 import bcrypt
 
 db = SQLAlchemy()
@@ -19,10 +20,20 @@ class User(db.Model):
 
     def __init__(self, json_data):
         d = json.loads(json_data)
-        self.email = d.get("email")
+        email = d.get("email")
+        self._email_unique(email)
+        self.email = email
         plain = bytes(d.get("pw"), 'utf-8')
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())
         self.display_name = d.get("display_name")
+
+    def _email_unique(self, email):
+        """
+        Checks to see if an email exists in the database and thus avaliable to be a primary key.
+        """
+        user = db.session.execute(db.select(User).where(User.email==email)).first()
+        if user is not None:
+            raise IntegrityError("Email already in use", None, Exception)
 
     def pw_valid(self, plain):
         """
