@@ -60,7 +60,7 @@ class Show(db.Model):
 
     def __init__(self, json_data):
         d = json.loads(json_data)
-        self.show_id = d.get("show_id")
+        # self.show_id = d.get("show_id")
         self.title = d.get("title")
 
     def __str__(self):

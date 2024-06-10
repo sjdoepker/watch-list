@@ -44,7 +44,7 @@ def create_user():
         "display_name" : "John Doe",
         "pw": "password123"
     }
-    test_user = User(json.dumps(data))
+    create_user = User(json.dumps(data))
     # test_db.session.commit(test_user)
     yield create_user
 
@@ -58,22 +58,22 @@ def create_show():
         "title": "What We Do In The Shadows"
     }
     test_show = Show(json.dumps(data))
-    test_db.session.add(test_show)
-    test_db.session.commit()
+    # test_db.session.add(test_show)
+    # test_db.session.commit()
     yield test_show
 
 @pytest.fixture(scope='module')
-def test_entry(test_db, test_show, test_user):
+def create_entry(create_user, create_show):
     """
     Creates a test entry
     """
     data = {
-        "show_id": test_show.show_id,
+        "show_id": create_show.show_id,
         "notes": "Watched the pilot episode",
         "is_watched": True,
-        "user_id": test_user.id
+        "user_id": create_user.id
     }
     test_entry = Entry(json.dumps(data))
-    test_db.session.add(test_entry)
-    test_db.session.commit()
+    # test_db.session.add(test_entry)
+    # test_db.session.commit()
     yield test_entry
