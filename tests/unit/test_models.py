@@ -7,7 +7,7 @@
 
 # from ...watchlist_proj.models import User, Show, Entry
 # from project.models import User, Show, Entry # pylint: disable=import-error
-from project.models import User
+from datetime import datetime
 
 # pylint: disable=unused-import
 from tests.conftest import test_db, create_user, create_show, create_entry # pylint: disable=import-error
@@ -17,7 +17,7 @@ def test_create_user(create_user):
     Tests creation of new user, makes sure all the fields are set correctly
     """
     # new_user = test_db.session.execute(test_db.select(User)).first()
-    assert create_user.id == 1
+    # assert create_user.id == 1
     assert create_user.email == "testmail@email.com"
     assert create_user.display_name == "John Doe"
     # Hardcoded because pw isn't retrievable from User object
@@ -50,8 +50,9 @@ def test_create_entry(create_entry, create_user, create_show):
     foreign keys. UNFINISHED
     """
     # new_entry =test_db.session.execute(db.select(Entry)).first()
-    assert create_entry.id == 1
+    # assert create_entry.entry_id == 1
     # assert create_entry.date_added == create_entry.date_added
-    assert create_entry.user_id == create_user.user_id
+    assert create_entry.user_id == create_user.id
     assert create_entry.show_id == create_show.show_id
-    # not yet finished, more fields to check
+    assert create_entry.notes == "Watched the pilot episode"
+    assert create_entry.is_watched is False

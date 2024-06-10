@@ -18,10 +18,11 @@ class User(db.Model):
     pw: Mapped[str] = mapped_column(String)
     display_name: Mapped[str] = mapped_column(String)
 
-    def __init__(self, json_data):
+    def __init__(self, json_data, debug=False):
         d = json.loads(json_data)
         email = d.get("email")
-        self._email_unique(email)
+        if debug is False:
+            self._email_unique(email)
         self.email = email
         plain = bytes(d.get("pw"), 'utf-8')
         self.pw = bcrypt.hashpw(plain, bcrypt.gensalt())

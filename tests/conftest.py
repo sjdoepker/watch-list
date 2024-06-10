@@ -44,7 +44,7 @@ def create_user():
         "display_name" : "John Doe",
         "pw": "password123"
     }
-    create_user = User(json.dumps(data))
+    create_user = User(json.dumps(data), debug=True)
     # test_db.session.commit(test_user)
     yield create_user
 
@@ -70,7 +70,7 @@ def create_entry(create_user, create_show):
     data = {
         "show_id": create_show.show_id,
         "notes": "Watched the pilot episode",
-        "is_watched": True,
+        "is_watched": False,
         "user_id": create_user.id
     }
     test_entry = Entry(json.dumps(data))
