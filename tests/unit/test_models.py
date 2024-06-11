@@ -7,7 +7,6 @@
 
 # from ...watchlist_proj.models import User, Show, Entry
 # from project.models import User, Show, Entry # pylint: disable=import-error
-from datetime import datetime
 
 # pylint: disable=unused-import
 from tests.conftest import test_db, create_user, create_show, create_entry # pylint: disable=import-error
