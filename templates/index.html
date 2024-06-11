@@ -5,9 +5,6 @@
   <h1>WatchList</h1>
   <ul>
     {% if session['logged_in'] %}
-
-        
-
       <p><span>Welcome, {{ session['display_name'] }} at {{session['email']}}!<p></span>
     {% else %}
     <p>You are not logged in.

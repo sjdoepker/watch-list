@@ -3,7 +3,7 @@ File containing all API methods
 """
 import functools
 import json
-from flask import Flask, request, jsonify, session, render_template
+from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
 from sqlalchemy import exc
 
@@ -81,28 +81,45 @@ def user_register():
 @app.route("/user/login", methods=['GET','POST'])
 def user_login():
     """
-    Logs in a user via sessions.
+    Logs in a user via sessions. If a user is already logged in, they will be logged
+    in as another user.
     """
-    data = request.get_json()
-    email = data['email']
+    ctx = {"error" : None, "code" : 200}
+    error = None
+    if request.method == "GET":
+        return render_template("login.html", context=ctx)
+    
+    # Else (if it's a POST request, i.e. someone trying to log in)
+    email = request.form.get('email')
+    plain_pw = request.form.get("password")
 
     user = db.session.execute(db.select(User).where(User.email==email)).first()
     if user is None:
-        return jsonify({"error":f"User with email {email} does not exist"}, 400)
+        # User with that email doesn't exist; 400 error code for bad request
+        ctx["error"] = "no_user_exists"
+        ctx['code'] = 400
+        error = f"User with email {email} does not exist"
 
-    plain_pw = data["pw"]
-    if not user.pw_valid(plain_pw):
-        return jsonify({"error": "Incorrect password for that user"}, 401)
+    elif not user.pw_valid(plain_pw):
+        error = "Wrong password, please try again"
+        # Error because that's the wrong password for that user; 401 code for unauthorized request
+        ctx["error"] = "bad_pw"
+        ctx["code"] = 401
 
     # create session (clearing what already exists) and add user info to it
-    session.clear()
-    session.permanent = True
-    session['user_id'] = user.id
-    session['email'] = email
-    session['display_name'] = user.display_name
-    session['logged_in'] = True
+    else:
+        session.clear()
+        session.permanent = True
+        session['user_id'] = user.id
+        session['email'] = email
+        session['display_name'] = user.display_name
+        session['logged_in'] = True
 
-    return jsonify({"message":f"User {user.display_name} logged in successfully"}, 200)
+        ctx["logged_in"] = True
+        flash(f"You were successfully logged in as {session.display_name}")
+        return redirect(url_for(base), code = 200)
+    return render_template('login.html', error=error)
+
 
 @app.route("/user/logout", methods=['GET','POST'])
 def user_logout():
