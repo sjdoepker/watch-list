@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h1>Show masterlist</h1>
+
+
+
+
+<br>
+<div name=addShow style="margin:auto; align-self: start;">
+    <form method=post>
+        <ul>
+            <li>Show title: <input type=text name=title value="{{request.form.title }}"></li>
+        </ul>
+    <p><input type=submit value=Add show>
+    </form> <br>
+</div>
+
+
+
+
+
+{% endblock %}

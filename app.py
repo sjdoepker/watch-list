@@ -20,7 +20,7 @@ CORS(app)
 
 migrate = Migrate(app, db)
 db.init_app(app)
-migrate.init_app(app, db)
+migrate.init_app(app, db, render_as_batch=True)
 
 
 def login_required(fcn):
@@ -141,7 +141,6 @@ def user_logout():
     return jsonify({"message":"You have been logged out."}, 200)
 
 
-
 @app.route("/user/get_all", methods=["GET"])
 @login_required
 def user_get_all_entries():
@@ -217,26 +216,32 @@ def entry_delete(entry_id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
-@app.route("/show/add/", methods=['POST'])
+@app.route("/show/add", methods=['GET', 'POST'])
 @login_required
 def show_add():
     """
     Adds a show. Does not take an id as a parameter because show ids are generated
     once added to the database.
     """
+    error = None
+    if request.method == "GET":
+        return render_template("newShow.html")
+
+    # implicit else
     try:
-        data = request.get_json()
+        data = {"title" : request.form.get("title")}
 
         new_show = Show(json.dumps(data))
 
         db.session.add(new_show)
         db.session.commit()
 
-        return jsonify({"message": "Show entry deleted successfully"}), 200
+        flash("Show added successfully", "message")
     except exc.SQLAlchemyError as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 400
+        error = f"Error: {e}"
 
+    return render_template("newShow.html", error=error)
 
 @app.route("/show/delete/<show_id>", methods=['POST'])
 @login_required
@@ -273,7 +278,7 @@ def query_show(query_id):
 
     Uses .first() to return the Show object rather than a Query object; show_ids are unique.
     """
-    return db.session.query(Show).filter_by(show_id=query_id).first()
+    return db.session.query(Show).filter_by(id=query_id).first()
 
 def query_entry(query_id):
     """
@@ -281,7 +286,7 @@ def query_entry(query_id):
 
     Uses .first() to return the Entry object rather than a Query object; entry_ids are unique.
     """
-    return db.session.query(Entry).filter_by(entry_id=query_id).first()
+    return db.session.query(Entry).filter_by(id=query_id).first()
 
 if __name__ == "__main__":
     app.run(debug=True)

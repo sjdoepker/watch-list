@@ -56,46 +56,44 @@ class Show(db.Model):
     """
     Show model for database.
     """
-    show_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String)
 
     def __init__(self, json_data):
         d = json.loads(json_data)
-        # self.show_id = d.get("show_id")
         self.title = d.get("title")
 
     def __str__(self):
-        return f"Show ID: {self.show_id}, Title: {self.title}"
+        return f"Show ID: {self.id}, Title: {self.title}"
 
     def __repr__(self):
-        return f"<Show(show_id={self.show_id}, title={self.title})>"
+        return f"<Show(id={self.id}, title={self.title})>"
 
 
 class Entry(db.Model):
     """
     Entry model for database. (Individual entries on a User's list)
     """
-    entry_id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    show_id: Mapped[int] = mapped_column(ForeignKey(Show.show_id))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, name="pk_id")
+    show_id: Mapped[int] = mapped_column(ForeignKey(Show.id), name="fk_show_id")
     notes: Mapped[str] = mapped_column(Text, nullable=True)
     is_watched: Mapped[bool] = mapped_column(Boolean, default=False)
     # pylint: disable=not-callable
     date_added: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    user_id: Mapped[int] = mapped_column(ForeignKey(User.id), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey(User.id), nullable=False, name="fk_user_id")
 
     def __init__(self, json_data):
         d = json.loads(json_data)
-        self.entry_id = d.get("entry_id")
         self.show_id = d.get("show_id")
         self.notes = d.get("notes")
         self.is_watched = d.get("is_watched", False)
         self.user_id = d.get("user_id")
 
     def __str__(self):
-        return f"Entry ID: {self.entry_id}, Show ID: {self.show_id}, \
+        return f"Entry ID: {self.id}, Show ID: {self.show_id}, \
             Watched: {self.is_watched}, Date Added: {self.date_added}"
 
     def __repr__(self):
-        return f"<Entry(entry_id={self.entry_id}, show_id={self.show_id}, \
+        return f"<Entry(entry_id={self.id}, show_id={self.show_id}, \
             notes={self.notes}, is_watched={self.is_watched}, \
             date_added={self.date_added}, user_id={self.user_id})>"
