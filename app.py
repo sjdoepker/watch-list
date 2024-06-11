@@ -23,17 +23,6 @@ db.init_app(app)
 migrate.init_app(app, db)
 
 
-
-@app.route("/")
-def base():
-    """
-    Placeholder for the home route of the app.
-    """
-    with app.app_context():
-        db.create_all()
-
-    return render_template("base.html")
-
 def login_required(fcn):
     """
     Decorator function that checks if a user is currently logged in before
@@ -47,13 +36,24 @@ def login_required(fcn):
         Handles the actual verification of a user being logged in (if their session
         contains an email).
         """
-        if "email" not in session:
+        if not session['logged_in']:
             # should redirect to login, store where they wanted to go and send them there after
             # return redirect("/user/login", 400)
             return jsonify({"error":"You must be logged in to access this page"}, 400)
         return fcn(*args, **kwargs)
 
     return check_session
+
+
+@app.route("/")
+def base():
+    """
+    Placeholder for the home route of the app.
+    """
+    with app.app_context():
+        db.create_all()
+
+    return render_template("base.html")
 
 
 @app.route("/user/register", methods=["POST", "GET"])
@@ -100,8 +100,21 @@ def user_login():
     session['user_id'] = user.id
     session['email'] = email
     session['display_name'] = user.display_name
+    session['logged_in'] = True
 
-    return jsonify({"message":f"User {user.display_name} logged in successfully"})
+    return jsonify({"message":f"User {user.display_name} logged in successfully"}, 200)
+
+@app.route("/user/logout", methods=['GET','POST'])
+def user_logout():
+    """
+    Logs a user out by clearing the session, and then setting the logged_in 
+    field to false.
+    """
+    session.clear()
+    session['logged_in'] = False
+
+    return jsonify({"message":"You have been logged out."}, 200)
+
 
 
 @app.route("/entry/get/<entry_id>", methods=["GET"])
