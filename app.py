@@ -3,7 +3,7 @@ File containing all API methods
 """
 import functools
 import json
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, render_template
 from flask_migrate import Migrate
 from sqlalchemy import exc
 
@@ -12,7 +12,7 @@ from project.models import db, User, Show, Entry
 
 app = Flask(__name__)
 
-app.config.from_pyfile('instance/config.py')
+app.config.from_pyfile('project/instance/config.py')
 # initialize the app with the extension
 app.json.compact = False
 
@@ -32,7 +32,7 @@ def base():
     with app.app_context():
         db.create_all()
 
-    return "<h1>heya world!</h1>"
+    return render_template("base.html")
 
 def login_required(fcn):
     """
