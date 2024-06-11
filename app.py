@@ -53,7 +53,7 @@ def base():
     with app.app_context():
         db.create_all()
 
-    return render_template("base.html")
+    return render_template("index.html")
 
 
 @app.route("/user/register", methods=["POST", "GET"])
