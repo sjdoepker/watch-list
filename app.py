@@ -61,6 +61,8 @@ def user_register():
     """
     Registers a user account.
     """
+    if request.method == "GET":
+        return render_template("register.html")
     data = request.get_json()
 
     try:
@@ -84,11 +86,10 @@ def user_login():
     Logs in a user via sessions. If a user is already logged in, they will be logged
     in as another user.
     """
-    ctx = {"error" : None, "code" : 200}
     error = None
     if request.method == "GET":
-        return render_template("login.html", context=ctx)
-    
+        return render_template("login.html")
+
     # Else (if it's a POST request, i.e. someone trying to log in)
     email = request.form.get('email')
     plain_pw = request.form.get("password")
@@ -96,15 +97,11 @@ def user_login():
     user = db.session.execute(db.select(User).where(User.email==email)).first()
     if user is None:
         # User with that email doesn't exist; 400 error code for bad request
-        ctx["error"] = "no_user_exists"
-        ctx['code'] = 400
         error = f"User with email {email} does not exist"
 
     elif not user.pw_valid(plain_pw):
         error = "Wrong password, please try again"
         # Error because that's the wrong password for that user; 401 code for unauthorized request
-        ctx["error"] = "bad_pw"
-        ctx["code"] = 401
 
     # create session (clearing what already exists) and add user info to it
     else:
@@ -115,7 +112,6 @@ def user_login():
         session['display_name'] = user.display_name
         session['logged_in'] = True
 
-        ctx["logged_in"] = True
         flash(f"You were successfully logged in as {session.display_name}")
         return redirect(url_for(base), code = 200)
     return render_template('login.html', error=error)
