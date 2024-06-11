@@ -61,23 +61,33 @@ def user_register():
     """
     Registers a user account.
     """
+    error = None
     if request.method == "GET":
         return render_template("register.html")
-    data = request.get_json()
+    data = {
+        "email": request.form.get('email'),
+        "display_name" : request.form.get("display_name"),
+        "pw" : request.form.get("password")
+    }
 
     try:
         new_user = User(json.dumps(data))
     except exc.SQLAlchemyError as e:
-        return jsonify({"error": f"User registration failed:{e}"}, 400)
+        error = f"User registration failed: {e}"
 
     try:
-        db.session.add(new_user)
-        db.session.commit()
+        if error is None:
+            db.session.add(new_user)
+            db.session.commit()
     except exc.SQLAlchemyError as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}, 500)
+        error = f"Error adding new user: {e}"
 
-    return jsonify({"message":"User registered successfully"}, 200)
+    if error is not None:
+        flash("You have been registered successfully.")
+        return redirect(url_for("user_login"), code=200)
+
+    return render_template("register.html", error=error)
 
 
 @app.route("/user/login", methods=['GET','POST'])
@@ -99,21 +109,23 @@ def user_login():
         # User with that email doesn't exist; 400 error code for bad request
         error = f"User with email {email} does not exist"
 
-    elif not user.pw_valid(plain_pw):
+    elif not user[0].pw_valid(plain_pw):
         error = "Wrong password, please try again"
         # Error because that's the wrong password for that user; 401 code for unauthorized request
 
     # create session (clearing what already exists) and add user info to it
     else:
         session.clear()
+        user = user[0]
         session.permanent = True
         session['user_id'] = user.id
         session['email'] = email
         session['display_name'] = user.display_name
         session['logged_in'] = True
 
-        flash(f"You were successfully logged in as {session.display_name}")
-        return redirect(url_for(base), code = 200)
+        flash(f"You were successfully logged in as {session['display_name']}")
+        return redirect("/", code=200)
+
     return render_template('login.html', error=error)
 
 

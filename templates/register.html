@@ -1,22 +1,24 @@
 {% extends "layout.html" %}
 
+
 {% block body %}
     {% block h1%}
-    <h1>Login</h1> <br>
+    <h1>Register</h1> <br>
     {%endblock%}
   {% if error %}
     <p class=error><strong>Error:</strong> {{ error }}
   {% endif %}
   <br>
-    <div name=loginform style="margin:auto;">
+    <div name=registerform style="margin:auto; align-self: start;">
         <form method=post>
             <ul>
                 <li>Email: <input type=text name=email value="{{request.form.email }}"></li>
                 <li>Password: <input type=password name=password value="{{request.form.password}}"></li>
+                <li>Display name: <input type=text name=display_name value="{{request.form.display_name}}"></li>
             </ul>
-        <p><input type=submit value=Log in>
+        <p><input type=submit value=Register>
         </form> <br>
     </div>
 
-  <a href="{{ url_for('user_register') }}">Register an account</a>
+  <a href="{{ url_for('user_login') }}">Log in instead</a>
 {% endblock %}
