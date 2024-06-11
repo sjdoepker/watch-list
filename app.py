@@ -142,19 +142,19 @@ def user_logout():
 
 
 
-@app.route("/entry/get/<entry_id>", methods=["GET"])
+@app.route("/user/get_all", methods=["GET"])
 @login_required
-def entry_get(entry_id):
+def user_get_all_entries():
     """
-    Route that currently returns 1 specific entry.
+    Route getting all entries from the logged in user.
 
+    
     Future: returns all of a user's list entries (will be under a different path with
     user as the base, not entry)
     """
     # return all the list contents; right now, there's just one
-    print("session:", session)
-    entry = query_entry(entry_id)
-    return str(entry)
+    entries = db.session.execute(db.select(Entry).filter_by(user_id=session['user_id'])).all()
+    return render_template("mylist.html", context=entries)
 
 
 @app.route("/entry/update/<entry_id>", methods=['POST'])
