@@ -153,7 +153,7 @@ def user_get_all_entries():
     """
     # return all the list contents; right now, there's just one
     entries = db.session.execute(db.select(Entry).filter_by(user_id=session['user_id'])).all()
-    return render_template("mylist.html", context=entries)
+    return render_template("myList.html", entries=entries)
 
 
 @app.route("/entry/update/<entry_id>", methods=['POST'])
@@ -180,25 +180,35 @@ def entry_update(entry_id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
-@app.route("/entry/add/", methods=['POST'])
+@app.route("/entry/add/", methods=['GET','POST'])
 @login_required
 def entry_add():
     """
     Adds an entry. Does not take an id as a parameter because entry ids are generated
     once the entry is added to the database.
     """
+    error = None
+    showlist = Show.query.all()
+    if request.method == 'GET':
+        return render_template("entryAdd.html", showlist=showlist)
     try:
-        data = request.get_json()
+        data = {
+            "show_id" : request.form.get("show"),
+            "notes" : request.form.get('notes'),
+            'user_id': session['user_id']
+        }
+
         new_entry = Entry(json.dumps(data))
 
         db.session.add(new_entry)
         db.session.commit()
 
-        return jsonify({"message": "Entry added successfully"}), 200
+        flash("Entry added successfully")
     except exc.SQLAlchemyError as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 400
+        error = f"Error in adding entry: {e}"
 
+    return render_template("entryAdd.html", error=error, showlist=showlist)
 
 @app.route("/entry/delete/<entry_id>", methods=['POST'])
 @login_required
@@ -224,11 +234,13 @@ def show_add():
     once added to the database.
     """
     error = None
+    showlist = Show.query.all()
     if request.method == "GET":
-        return render_template("newShow.html")
+        return render_template("showAdd.html", showlist=showlist)
 
     # implicit else
     try:
+
         data = {"title" : request.form.get("title")}
 
         new_show = Show(json.dumps(data))
@@ -241,7 +253,7 @@ def show_add():
         db.session.rollback()
         error = f"Error: {e}"
 
-    return render_template("newShow.html", error=error)
+    return render_template("showAdd.html", error=error,showlist=showlist)
 
 @app.route("/show/delete/<show_id>", methods=['POST'])
 @login_required
