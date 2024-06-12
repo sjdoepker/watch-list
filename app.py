@@ -164,8 +164,9 @@ def user_get_all_entries():
             mapped_shows[entry_obj.show_id] = []
         mapped_shows[entry_obj.show_id].append(entry_obj)
 
-    # html goes through all shows and associated entries; populates table with both Show and Entry data
-    return render_template("myList.html", entries=entries, all_shows=all_shows, mapped_shows=mapped_shows)
+    # html goes through all shows and their entries; populates table with both Show and Entry data
+    return render_template("myList.html",entries=entries, all_shows=all_shows,
+                           mapped_shows=mapped_shows)
 
 
 @app.route("/entry/update/<entry_id>", methods=['POST'])
