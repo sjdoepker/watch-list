@@ -151,9 +151,21 @@ def user_get_all_entries():
     Future: returns all of a user's list entries (will be under a different path with
     user as the base, not entry)
     """
-    # return all the list contents; right now, there's just one
+    all_shows = db.session.query(Show).join(Entry, Show.id == Entry.show_id).all()
     entries = db.session.execute(db.select(Entry).filter_by(user_id=session['user_id'])).all()
-    return render_template("myList.html", entries=entries)
+
+
+    # to pass in show title (foreign key) with entry;  maps each show_id to the entry
+    mapped_shows = {}
+    for entry in entries:
+        # Necessary because entry is a Row object, not an Entry object
+        entry_obj = entry[0]
+        if entry_obj.show_id not in mapped_shows:
+            mapped_shows[entry_obj.show_id] = []
+        mapped_shows[entry_obj.show_id].append(entry_obj)
+
+    # html goes through all shows and associated entries; populates table with both Show and Entry data
+    return render_template("myList.html", entries=entries, all_shows=all_shows, mapped_shows=mapped_shows)
 
 
 @app.route("/entry/update/<entry_id>", methods=['POST'])

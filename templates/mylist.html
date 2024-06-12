@@ -4,12 +4,30 @@
 <h1> {{session['display_name']}}'s WatchList</h1>
 
 <h3>My WatchList</h3>
-<table name=userwatchlist style="display:grid; align-content:center; text-align:left; margin-left:6em;">
-{%for item in entries%}
-    <tr>
-        <th> {{item[0]}} </th>
-    </tr>
-{% endfor %}
+<table>
+    <thead>
+        <tr>
+            <th>Show Title</th>
+            <th>Notes</th>
+            <th>Watched</th>
+            <th>Date Added</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tbody>
+            {% for show in all_shows %}
+                {% for entry in mapped_shows.get(show.id, []) %}
+                    <tr>
+                        <td>{{ show.title }}</td>
+                        <td>{{ entry.notes }}</td>
+                        <td>{{ "Yes" if entry.is_watched else "No" }}</td>
+                        <td>{{ entry.date_added }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </tbody>
 </table>
 
 <a href="{{ url_for('entry_add') }}">Add a new entry to the list</a>
