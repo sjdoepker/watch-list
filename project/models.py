@@ -1,7 +1,7 @@
 """File containing database models/schema"""
 import json
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime
+from sqlalchemy import Integer, String, Boolean, ForeignKey, Text, DateTime, LargeBinary
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 from sqlalchemy.exc import IntegrityError
@@ -15,7 +15,7 @@ class User(db.Model):
     """
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
-    pw: Mapped[str] = mapped_column(String)
+    pw: Mapped[bytes] = mapped_column(LargeBinary)
     display_name: Mapped[str] = mapped_column(String)
 
     def __init__(self, json_data, debug=False):
