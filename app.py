@@ -3,6 +3,7 @@ File containing all API methods
 """
 import functools
 import json
+import psycopg2
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
 from sqlalchemy import exc
@@ -17,6 +18,7 @@ app.config.from_pyfile('project/instance/config.py')
 app.json.compact = False
 
 CORS(app)
+db_connection = psycopg2.connect("dbname=watchdb user=watcher password=watcher")
 
 migrate = Migrate(app, db)
 db.init_app(app)
