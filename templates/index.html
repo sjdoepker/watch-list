@@ -1,0 +1,15 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} Welcome to WatchList!</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<nav>
+  <h1>WatchList</h1>
+  <ul>
+    {% if session['logged_in'] %}
+      <p><span>Welcome, {{ session['display_name'] }} at {{session['email']}}!<p></span>
+    {% else %}
+    <p>You are not logged in.
+      <li><a href="{{ url_for('user_register') }}">Register</a>
+      <li><a href="{{ url_for('user_login') }}">Log In</a>
+    {% endif %}
+  </ul>
+</nav>
