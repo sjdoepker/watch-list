@@ -36,7 +36,7 @@ def login_required(fcn):
         Handles the actual verification of a user being logged in (if their session
         contains an email).
         """
-        if not session['logged_in']:
+        if not session.get("logged_in", False):
             # should redirect to login, store where they wanted to go and send them there after
             # return redirect("/user/login", 400)
             return jsonify({"error":"You must be logged in to access this page"}, 400)
