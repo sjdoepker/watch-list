@@ -3,6 +3,7 @@ File containing all API methods
 """
 import functools
 import json
+import psycopg2
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
 from sqlalchemy import exc
@@ -17,6 +18,7 @@ app.config.from_pyfile('project/instance/config.py')
 app.json.compact = False
 
 CORS(app)
+db_connection = psycopg2.connect("dbname=watchdb user=watcher password=watcher")
 
 migrate = Migrate(app, db)
 db.init_app(app)
@@ -124,7 +126,7 @@ def user_login():
         session['logged_in'] = True
 
         flash(f"You were successfully logged in as {session['display_name']}")
-        return redirect("/", code=200)
+        return redirect(url_for(user_get_all_entries), code=200)
 
     return render_template('login.html', error=error)
 
