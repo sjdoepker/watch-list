@@ -52,6 +52,6 @@ def test_create_entry(create_entry, create_user, create_show):
     # assert create_entry.entry_id == 1
     # assert create_entry.date_added == create_entry.date_added
     assert create_entry.user_id == create_user.id
-    assert create_entry.show_id == create_show.show_id
+    assert create_entry.show_id == create_show.id
     assert create_entry.notes == "Watched the pilot episode"
     assert create_entry.is_watched is False

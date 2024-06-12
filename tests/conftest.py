@@ -68,7 +68,7 @@ def create_entry(create_user, create_show):
     Creates a test entry
     """
     data = {
-        "show_id": create_show.show_id,
+        "show_id": create_show.id,
         "notes": "Watched the pilot episode",
         "is_watched": False,
         "user_id": create_user.id
