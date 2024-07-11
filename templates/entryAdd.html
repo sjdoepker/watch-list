@@ -13,6 +13,9 @@
                 <option value="{{ show.id }}">{{ show.title }}</option>
             {% endfor %}
         </select>
+        <br>
+        <label for="watched">Already watched?</label>
+        <input type="checkbox" name="watched" id="watched" value="1">
         <br><br>
         <label for="notes">Notes (optional):</label><br>
         <textarea name="notes" id="notes" rows="4" cols="50"></textarea>

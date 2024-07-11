@@ -6,6 +6,9 @@
   <ul>
     {% if session['logged_in'] %}
       <p><span>Welcome, {{ session['display_name'] }} at {{session['email']}}!<p></span>
+        <a href="{{ url_for('user_get_all_entries') }}">My WatchList</a>
+
+
     {% else %}
     <p>You are not logged in.
       <li><a href="{{ url_for('user_register') }}">Register</a>

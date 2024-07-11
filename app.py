@@ -206,11 +206,15 @@ def entry_add():
     showlist = Show.query.all()
     if request.method == 'GET':
         return render_template("entryAdd.html", showlist=showlist)
+
+    # implicit else
     try:
+        already_watched = bool(request.form.get('watched'))
         data = {
             "show_id" : request.form.get("show"),
             "notes" : request.form.get('notes'),
-            'user_id': session['user_id']
+            'user_id': session['user_id'],
+            "is_watched" : already_watched
         }
 
         new_entry = Entry(json.dumps(data))
