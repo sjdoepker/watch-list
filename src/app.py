@@ -9,11 +9,11 @@ from flask_migrate import Migrate
 from sqlalchemy import exc
 
 from flask_cors import CORS
-from project.models import db, User, Show, Entry
+from .models import db, User, Show, Entry
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
-app.config.from_pyfile('project/instance/config.py')
+app.config.from_pyfile('instance/config.py')
 # initialize the app with the extension
 app.json.compact = False
 
