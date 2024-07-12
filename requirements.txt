@@ -6,7 +6,6 @@ click==8.1.7
 colorama==0.4.6
 coverage==7.5.3
 dill==0.3.8
-Flask==3.0.3
 Flask-Bcrypt==1.0.1
 Flask-Cors==4.0.1
 Flask-Login==0.6.3
@@ -26,6 +25,7 @@ pluggy==1.5.0
 psycopg2==2.9.9
 pylint==3.2.2
 pytest==8.2.2
+python-dotenv==1.0.1
 SQLAlchemy==2.0.30
 tomlkit==0.12.5
 typing_extensions==4.11.0

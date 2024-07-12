@@ -2,8 +2,10 @@
 File containing all API methods
 """
 import functools
+import os
 import json
 import psycopg2
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
 from sqlalchemy import exc
@@ -12,13 +14,34 @@ from flask_cors import CORS
 from project.models import db, User, Show, Entry
 
 app = Flask(__name__)
+load_dotenv()
 
 app.config.from_pyfile('project/instance/config.py')
 # initialize the app with the extension
 app.json.compact = False
 
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
+# If any database environment variables is not set, raise an error
+if DB_HOST is None:
+    raise ValueError('DB_HOST is not set')
+elif DB_NAME is None:
+    raise ValueError('DB_NAME is not set')
+elif DB_USERNAME is None:
+    raise ValueError('DB_USERNAME is not set')
+elif DB_PASSWORD is None:
+    raise ValueError('DB_PASSWORD is not set')
+
 CORS(app)
-db_connection = psycopg2.connect("dbname=watchdb user=watcher password=watcher")
+db_connection = psycopg2.connect(
+    host=DB_HOST, 
+    database=DB_NAME,
+    user=DB_USERNAME,
+    password=DB_PASSWORD
+    )
 
 migrate = Migrate(app, db)
 db.init_app(app)
