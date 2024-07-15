@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h1>Add WatchList entry</h1>
+
+<p>Choose from the show masterlist to create their own WatchList entries.</p>
+
+<div name=addEntry style="margin:auto; align-self: start;">
+    <form method=post>
+        <label for="show">Choose a show to add to your WatchList:</label>
+        <select name="show" id="show">
+            {% for show in showlist %}
+                <option value="{{ show.id }}">{{ show.title }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="notes">Notes (optional):</label><br>
+        <textarea name="notes" id="notes" rows="4" cols="50"></textarea>
+        <br>
+        <input type="submit" value="Add entry">
+
+    </form> <br>
+</div>
+
+
+<a href="{{ url_for('user_get_all_entries') }}">Back to my list</a>
+{% endblock %}

@@ -11,12 +11,22 @@ To run PostgreSQL db (on windows): ``psql -U watcher -h 127.0.0.1 -d watchdb``
 
 If you do want to run this, you'll also have to set up your own config.py file with a secret key, Postgres path, etc.
 
+Nginx cheatsheet for AWS:
+### Start Nginx service
+`$ sudo systemctl start nginx/<service>`
+
+### Stop Nginx service
+`$ sudo systemctl stop nginx/<service>`
+
+### Disable Nginx service to start up at boot
+`$ sudo systemctl disable nginx/<service>`
+
 ## Features to-do:
 - Integrate app logic/endpoints with HTML
 All of the backend logic works, but a lot of it currently serves raw JSON and isn't integrated with the HTML/actual pages of the app. 
 - User access type restrictions
 - Containerize database
-- Move onto AWS (or other cloud service)
+- ~~Move onto AWS (or other cloud service)~~ Done! It's running on an EC2 instance with RDS.
 - Implement CD pipeline
 
 Things I think would be fun but are not essential:
@@ -25,3 +35,4 @@ Things I think would be fun but are not essential:
 - Set up Terraform to manage cloud resources + permissions
 - Rate limit endpoints
 
+Thank you to [Zhen Jun Xu's guide to deploying on AWS](https://blog.arlenx.io/posts/deploy-flask-application-on-aws-ec2-and-postgresql) for helping me deploy this.
