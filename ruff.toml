@@ -17,6 +17,7 @@ exclude = [
     ".svn",
     ".tox",
     ".env",
+    "migrations",
     ".venv",
     ".vscode",
     "__pypackages__",
