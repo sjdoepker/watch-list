@@ -26,22 +26,28 @@ DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 # If any database environment variables is not set, raise an error
-if DB_HOST is None:
-    raise ValueError('DB_HOST is not set')
-elif DB_NAME is None:
-    raise ValueError('DB_NAME is not set')
-elif DB_USERNAME is None:
-    raise ValueError('DB_USERNAME is not set')
-elif DB_PASSWORD is None:
-    raise ValueError('DB_PASSWORD is not set')
-
-CORS(app)
-db_connection = psycopg2.connect(
+if (not app.debug):
+    if DB_HOST is None:
+        raise ValueError('DB_HOST is not set')
+    elif DB_NAME is None:
+        raise ValueError('DB_NAME is not set')
+    elif DB_USERNAME is None:
+        raise ValueError('DB_USERNAME is not set')
+    elif DB_PASSWORD is None:
+        raise ValueError('DB_PASSWORD is not set')
+    db_connection = psycopg2.connect(
     host=DB_HOST, 
     database=DB_NAME,
     user=DB_USERNAME,
     password=DB_PASSWORD
     )
+else:
+    db_connection = psycopg2.connect("dbname=watchdb user=watcher password=watcher")
+
+
+
+CORS(app)
+
 
 migrate = Migrate(app, db)
 db.init_app(app)
