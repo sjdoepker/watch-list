@@ -26,24 +26,21 @@ DB_PASSWORD = app.config['DB_PASSWORD']
 
 
 # If any database environment variables is not set, raise an error
-if (not app.debug):
-    if DB_HOST is None:
-        raise ValueError('DB_HOST is not set')
-    elif DB_NAME is None:
-        raise ValueError('DB_NAME is not set')
-    elif DB_USERNAME is None:
-        raise ValueError('DB_USERNAME is not set')
-    elif DB_PASSWORD is None:
-        raise ValueError('DB_PASSWORD is not set')
-    db_connection = psycopg2.connect(
+if DB_HOST is None:
+    raise ValueError('DB_HOST is not set')
+elif DB_NAME is None:
+    raise ValueError('DB_NAME is not set')
+elif DB_USERNAME is None:
+    raise ValueError('DB_USERNAME is not set')
+elif DB_PASSWORD is None:
+    raise ValueError('DB_PASSWORD is not set')
+
+db_connection = psycopg2.connect(
     host=DB_HOST, 
     database=DB_NAME,
     user=DB_USERNAME,
     password=DB_PASSWORD
-    )
-else:
-    db_connection = psycopg2.connect("dbname=watchdb user=watcher password=watcher")
-
+)
 
 
 CORS(app)
