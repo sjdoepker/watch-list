@@ -2,7 +2,6 @@
 File containing all API methods
 """
 import functools
-import os
 import json
 import psycopg2
 from dotenv import load_dotenv
@@ -20,10 +19,11 @@ app.config.from_pyfile('instance/config.py')
 # initialize the app with the extension
 app.json.compact = False
 
-DB_HOST = os.getenv('DB_HOST')
-DB_NAME = os.getenv('DB_NAME')
-DB_USERNAME = os.getenv('DB_USERNAME')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = app.config['DB_HOST']
+DB_NAME = app.config['DB_NAME']
+DB_USERNAME = app.config['DB_USERNAME']
+DB_PASSWORD = app.config['DB_PASSWORD']
+
 
 # If any database environment variables is not set, raise an error
 if (not app.debug):
