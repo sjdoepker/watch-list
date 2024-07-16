@@ -4,7 +4,6 @@ File containing all API methods
 import functools
 import json
 import psycopg2
-from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
@@ -201,12 +200,8 @@ def user_get_all_entries():
             "timestamp": timestamp
         }
         mapped_shows[entry_obj.show_id].append(entry_data)
-        # mapped_shows[entry_obj.show_id].append(entry_obj)
-        # mapped_shows[entry_obj.show_id].append(formatted)
-    # print(formatted)
-    # print("printing", mapped_shows[1][0], mapped_shows[1][0].date_added)
-    # print("mapped entry:", mapped_shows[1])
-    # html goes through all shows and their entries; populates table with both Show and Entry data
+
+    # html goes through all shows and their entries; populates table with Show, Entry, and formatted timestamp data
     return render_template("mylist.html",entries=entries, all_shows=all_shows,
                            mapped_shows=mapped_shows)
 
