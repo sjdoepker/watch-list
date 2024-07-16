@@ -1,15 +1,4 @@
-# pylint: disable=redefined-outer-name
 """Unit tests for db models"""
-# import json
-# import pytest #pylint: disable=import-error
-
-# from sqlalchemy.exc import IntegrityError
-
-# from ...watchlist_proj.models import User, Show, Entry
-# from project.models import User, Show, Entry # pylint: disable=import-error
-
-# pylint: disable=unused-import
-from tests.conftest import test_db, create_user, create_show, create_entry # pylint: disable=import-error
 
 def test_create_user(create_user):
     """

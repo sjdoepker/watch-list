@@ -2,8 +2,10 @@
 File containing all API methods
 """
 import functools
+import os
 import json
 import psycopg2
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
 from sqlalchemy import exc
@@ -12,13 +14,40 @@ from flask_cors import CORS
 from .models import db, User, Show, Entry
 
 app = Flask(__name__, template_folder="templates")
+load_dotenv()
 
 app.config.from_pyfile('instance/config.py')
 # initialize the app with the extension
 app.json.compact = False
 
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
+# If any database environment variables is not set, raise an error
+if (not app.debug):
+    if DB_HOST is None:
+        raise ValueError('DB_HOST is not set')
+    elif DB_NAME is None:
+        raise ValueError('DB_NAME is not set')
+    elif DB_USERNAME is None:
+        raise ValueError('DB_USERNAME is not set')
+    elif DB_PASSWORD is None:
+        raise ValueError('DB_PASSWORD is not set')
+    db_connection = psycopg2.connect(
+    host=DB_HOST, 
+    database=DB_NAME,
+    user=DB_USERNAME,
+    password=DB_PASSWORD
+    )
+else:
+    db_connection = psycopg2.connect("dbname=watchdb user=watcher password=watcher")
+
+
+
 CORS(app)
-db_connection = psycopg2.connect("dbname=watchdb user=watcher password=watcher")
+
 
 migrate = Migrate(app, db)
 db.init_app(app)
@@ -126,7 +155,7 @@ def user_login():
         session['logged_in'] = True
 
         flash(f"You were successfully logged in as {session['display_name']}")
-        return redirect(url_for("user_get_all_entries"), code=302)
+        return redirect(url_for(user_get_all_entries), code=200)
 
     return render_template('login.html', error=error)
 
@@ -206,15 +235,11 @@ def entry_add():
     showlist = Show.query.all()
     if request.method == 'GET':
         return render_template("entryAdd.html", showlist=showlist)
-
-    # implicit else
     try:
-        already_watched = bool(request.form.get('watched'))
         data = {
             "show_id" : request.form.get("show"),
             "notes" : request.form.get('notes'),
-            'user_id': session['user_id'],
-            "is_watched" : already_watched
+            'user_id': session['user_id']
         }
 
         new_entry = Entry(json.dumps(data))

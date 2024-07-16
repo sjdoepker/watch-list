@@ -1,19 +1,15 @@
-# pylint: disable=redefined-outer-name
-# technically there's a way around these errors but I'm planning to fix it later, not important atm
 "Configurations for tests"
 import os
 import sys
 import json
-import pytest #pylint: disable=import-error
-# i cannot, for the life of me, figure out why i need to do this
+import pytest 
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from src.models import User, Show, Entry
 
-# so that it can find watchlist.models
+# so that it can find src.models
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 
 
 # not using an application factory
