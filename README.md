@@ -24,8 +24,8 @@ Nginx cheatsheet for AWS:
 ## Features to-do:
 - Integrate app logic/endpoints with HTML
 All of the backend logic works, but a lot of it currently serves raw JSON and isn't integrated with the HTML/actual pages of the app. 
-- User access type restrictions
-- Containerize database
+- User access type restrictions (e.g. admin/regular user)
+- ~~Containerize database~~ Since the app is on AWS, not really necessary/technically done.
 - ~~Move onto AWS (or other cloud service)~~ Done! It's running on an EC2 instance managed with RDS.
 - Implement CD pipeline
 
