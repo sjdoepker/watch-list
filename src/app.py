@@ -4,6 +4,7 @@ File containing all API methods
 import functools
 import json
 import psycopg2
+from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
@@ -183,17 +184,30 @@ def user_get_all_entries():
     entries = db.session.execute(db.select(Entry).filter_by(user_id=session['user_id'])).all()
 
 
-    # to pass in show title (foreign key) with entry;  maps each show_id to the entry
+    # to pass in show title (foreign key) with entry; maps each show_id to the entry
     mapped_shows = {}
     for entry in entries:
         # Necessary because entry is a Row object, not an Entry object
         entry_obj = entry[0]
         if entry_obj.show_id not in mapped_shows:
             mapped_shows[entry_obj.show_id] = []
-        mapped_shows[entry_obj.show_id].append(entry_obj)
-
+        
+    # timestamp = datetime.fromisoformat(mapped_shows[1][0].date_added)
+    # print(type(mapped_shows[1][0].date_added))
+    
+        timestamp = entry_obj.date_added.strftime('%m/%d/%Y %H:%M').replace(' 0', ' ').replace('/0', '/')
+        entry_data = {
+            "entry": entry_obj,
+            "timestamp": timestamp
+        }
+        mapped_shows[entry_obj.show_id].append(entry_data)
+        # mapped_shows[entry_obj.show_id].append(entry_obj)
+        # mapped_shows[entry_obj.show_id].append(formatted)
+    # print(formatted)
+    # print("printing", mapped_shows[1][0], mapped_shows[1][0].date_added)
+    # print("mapped entry:", mapped_shows[1])
     # html goes through all shows and their entries; populates table with both Show and Entry data
-    return render_template("myList.html",entries=entries, all_shows=all_shows,
+    return render_template("mylist.html",entries=entries, all_shows=all_shows,
                            mapped_shows=mapped_shows)
 
 

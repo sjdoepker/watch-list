@@ -10,19 +10,19 @@
             <th>Show Title</th>
             <th>Notes</th>
             <th>Watched</th>
-            <th>Date Added</th>
+            <th>Date Added (mm/dd/yyyy)</th>
         </tr>
     </thead>
 
     <tbody>
         <tbody>
             {% for show in all_shows %}
-                {% for entry in mapped_shows.get(show.id, []) %}
+                {% for entry_data in mapped_shows.get(show.id, []) %}
                     <tr>
                         <td>{{ show.title }}</td>
-                        <td>{{ entry.notes }}</td>
-                        <td>{{ "Yes" if entry.is_watched else "No" }}</td>
-                        <td>{{ entry.date_added }}</td>
+                        <td>{{ entry_data['entry'].notes }}</td>
+                        <td>{{ "Yes" if entry_data['entry'].is_watched else "No" }}</td>
+                        <td>{{ entry_data['timestamp'] }}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}
