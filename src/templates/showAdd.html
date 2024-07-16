@@ -18,10 +18,17 @@
 
 
 <h3>Show masterlist</h3>
-<table name=shows style="display:grid; align-content:center; text-align:left; margin-left:6em;">
+<table>
+    <thead>
+        <tr>
+            <th>Show Title and ID</th>
+        </tr>
+    </thead>
+<table name=showlist style="display:grid; align-content:center; text-align:left; margin-left:6em;">
+    
 {%for item in showlist%}
     <tr>
-        <th> {{item[0]}} </th>
+        <th> {{item.title}} (Id = {{item.id}}) </th>
     </tr>
 {% endfor %}
 </table>
