@@ -126,7 +126,7 @@ def user_login():
         session['logged_in'] = True
 
         flash(f"You were successfully logged in as {session['display_name']}")
-        return redirect(url_for("user_get_all_entries"), code=200)
+        return redirect(url_for("user_get_all_entries"), code=302)
 
     return render_template('login.html', error=error)
 
