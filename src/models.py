@@ -78,7 +78,6 @@ class Entry(db.Model):
     show_id: Mapped[int] = mapped_column(ForeignKey(Show.id), name="fk_show_id")
     notes: Mapped[str] = mapped_column(Text, nullable=True)
     is_watched: Mapped[bool] = mapped_column(Boolean, default=False)
-    # pylint: disable=not-callable
     date_added: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), nullable=False, name="fk_user_id")
 
