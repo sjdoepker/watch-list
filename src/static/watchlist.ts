@@ -35,22 +35,44 @@ class ListManager
             if (row) {
                 const strEntryId = row.getAttribute("data-entry-id");
                 if (strEntryId) {
+                    // where more button functionality will go if needed
                     const entryId = parseInt(strEntryId, 10);
                     if (target.classList.contains("mark-watched-btn")) {
-                        this.markAsWatched(entryId, row);
+                        this.sendRequest("/entry/update/watched/${entryId}", "POST", row, this.updateWatchedStatus);
                     }
                     else if (target.classList.contains("delete-btn")){
-                        this.deleteEntry(entryId, row);
+                        this.sendRequest("/entry/delete/${entryId}", "POST", row, this.deleteEntry);
                     }
                 }
             }
         }
     }
 
-}
+    private async sendRequest(
+        url: string, 
+        method: string, 
+        row: HTMLTableRowElement, 
+        successCallback: (row: HTMLTableRowElement) => void): Promise<void> {
+            try {
+                // csrf token not implemented yet
+                const response = await fetch(url, {method:method});
+                // const response = await fetch(url, {method, headers:{
+                //     "X-CSRFToken": this.getCSRFToken;
+                // }})
+                if (!response.ok){
+                    throw new Error("Failed to send request");
+                }
+                successCallback(row);
+            }
+            catch (error) {
+                console.error("Error:", error);
+                // if it's an error type: display it, otherwise show the string 
+                alert(error instanceof Error ? :"Error trying to send request");
+            }
+
+    }
 
 
-function entryMarkAsWatched(entryId)
-{
-    fetch(`entry/update/watched/"${entryId}`)
+
 }
+
