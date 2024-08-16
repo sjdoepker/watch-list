@@ -230,6 +230,26 @@ def entry_update(entry_id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
+@app.route("/entry/update/watched/<entry_id>")
+@login_required
+def entry_update_watched(entry_id):
+    """
+    Sets an entry's watched status to True
+    """
+    try:
+        entry = query_entry(entry_id)
+        if not entry:
+            return jsonify({"error": "Entry not found, cannot update"}), 404
+
+        entry.is_watched = True
+        db.session.commit()
+
+        return jsonify({"message": "Entry updated successfully"}), 200
+    except exc.SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+    
+
 @app.route("/entry/add/", methods=['GET','POST'])
 @login_required
 def entry_add():
