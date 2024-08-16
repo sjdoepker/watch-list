@@ -23,6 +23,11 @@
                         <td>{{ entry_data['entry'].notes }}</td>
                         <td>{{ "Yes" if entry_data['entry'].is_watched else "No" }}</td>
                         <td>{{ entry_data['timestamp'] }}</td>
+                        <td>
+                            {% if not entry_data['entry'].is_watched %}
+                                <button onclick="entry_update_watched({{entry_data['id']}})">Mark as Watched</button></td>
+                            {% endif %}
+                        <td></td>
                     </tr>
                 {% endfor %}
             {% endfor %}
@@ -34,3 +39,7 @@
 <a href="{{ url_for('show_add') }}">Add a new show (Admins only)</a>
 
 {% endblock %}
+
+
+
+
